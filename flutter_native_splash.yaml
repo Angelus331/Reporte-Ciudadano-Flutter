@@ -1,0 +1,16 @@
+flutter_native_splash:
+  color: "#FFFFFF"              # Fondo blanco para modo claro
+  color_dark: "#0F172A"         # Tu color Slate-900 para Modo Oscuro nativo 🌙
+  
+  # Si tienes un logo en tus assets (ej. assets/logo.png), pon la ruta aquí.
+  # Si aún no tienes un archivo de imagen, puedes comentarla usando '#' al inicio.
+  # image: assets/logo.png
+  # image_dark: assets/logo_dark.png
+
+  android_12:
+    color: "#FFFFFF"
+    color_dark: "#0F172A"
+    # image: assets/logo.png
+    # image_dark: assets/logo_dark.png
+
+  fullscreen: true

@@ -14,6 +14,7 @@ class ReportModel {
     this.imageUrl,
     this.latitude,
     this.longitude,
+    this.categoryId,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +29,7 @@ class ReportModel {
       longitude: json['longitude'] != null
           ? double.parse(json['longitude'].toString())
           : null,
+      categoryId: json['category_id'] ?? json['category']?['id'],
     );
   }
 }
