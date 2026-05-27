@@ -5,6 +5,7 @@ class ReportModel {
   final String? imageUrl;
   final double? latitude;
   final double? longitude;
+  final int? categoryId;
 
   ReportModel({
     required this.id,
