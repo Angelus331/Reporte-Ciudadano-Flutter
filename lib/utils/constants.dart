@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class Constants {
-  static const String baseUrl = "http://127.0.0.1:8000/api";
+  static const String baseUrl = "http://44.206.63.158/api";
+  //static const String baseUrl = "http://127.0.0.1:8000/api" para servidor propio
+
   // cambiar url por la de la pc
   static Map<String, dynamic> getCategoryStyle(String categoryName) {
     switch (categoryName.toLowerCase()) {

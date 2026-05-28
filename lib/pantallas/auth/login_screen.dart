@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Bienvenido de nuevo! 👋'),
+            content: Text('¡Wennnnaaaaaaaaaassss!!!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Error de login. Verifica tus credenciales.'),
+            content: Text('Error de login. Verifica tus credenciales o eres kbro.'),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 8),
                 const Center(
                   child: Text(
-                    'Reporta incidencias y mejora tu vecindario',
+                    'Reporta incidencias y mejora tu ciudad',
                     style: TextStyle(color: Colors.grey, fontSize: 15),
                   ),
                 ),
@@ -147,12 +147,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'El correo es obligatorio';
+                      return 'El correo es obligatorio jijuna huayjuna';
                     }
                     if (!RegExp(
                       r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                     ).hasMatch(value.trim())) {
-                      return 'Ingresa un correo electrónico válido';
+                      return 'Ingresa un correo electrónico q si exista';
                     }
                     return null;
                   },
@@ -190,7 +190,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'La contraseña es obligatoria';
+                      return 'La contraseña es obligatoria jijuna huayjuna';
                     }
                     return null;
                   },

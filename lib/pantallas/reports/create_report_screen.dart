@@ -120,12 +120,12 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
       await NotificationService.showNotification(
         title: 'Reporte creado',
-        body: 'Tu reporte fue enviado correctamente',
+        body: 'Tu reporte fue enviado correctamente, Todo un Crack',
       );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Reporte creado con éxito 🎉')),
+          const SnackBar(content: Text('Reporte creado con éxito, Ayudaste a tu comunidad')),
         );
         Navigator.pop(context);
       }
@@ -164,7 +164,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 🏷️ 1. SELECCIÓN DE CATEGORÍA MODERNA (Chips Horizontales con Iconos)
+            // SELECCIÓN DE CATEGORÍA MODERNA (Chips Horizontales con Iconos)
             const Text(
               'Categoría del incidente',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
@@ -215,7 +215,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             const SizedBox(height: 20),
 
-            // 📝 2. TÍTULO MODERNO
+            // TÍTULO MODERNO
             TextField(
               controller: titleController,
               decoration: InputDecoration(
@@ -232,7 +232,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             const SizedBox(height: 16),
 
-            // 📝 3. DESCRIPCIÓN MODERNA
+            //DESCRIPCIÓN MODERNA
             TextField(
               controller: descriptionController,
               maxLines: 4,
@@ -254,7 +254,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             const SizedBox(height: 20),
 
-            // 🖼️ 4. PREVIEW DE IMAGEN ESTILIZADA
+            // PREVIEW DE IMAGEN ESTILIZADA
             if (image != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 16.0),
@@ -264,7 +264,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 ),
               ),
 
-            // 📸 5. BOTONES DE ADQUISICIÓN DE IMAGEN
+            // BOTONES DE ADQUISICIÓN DE IMAGEN
             Row(
               children: [
                 Expanded(
@@ -297,7 +297,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             const Divider(),
             const SizedBox(height: 16),
 
-            // 🗺️ 6. SECCIÓN COORDENADAS GPS
+            // SECCIÓN COORDENADAS GPS
             Row(
               children: [
                 Expanded(
@@ -338,7 +338,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             const SizedBox(height: 12),
 
-            // 🛰️ BOTÓN GPS AUTOMÁTICO ULTRA-MODERNO
+            // BOTÓN GPS AUTOMÁTICO ULTRA-MODERNO
             ElevatedButton.icon(
               onPressed: getLocation,
               icon: const Icon(Icons.location_searching_rounded),
@@ -354,7 +354,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
             const SizedBox(height: 40),
 
-            // 🚀 7. BOTÓN DEFINITIVO DE GUARDADO CON LOADING INTEGRADO
+            // BOTÓN DEFINITIVO DE GUARDADO CON LOADING INTEGRADO
             SizedBox(
               height: 52,
               child: ElevatedButton(

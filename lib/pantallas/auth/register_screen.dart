@@ -49,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('¡Usuario registrado con éxito! 🎉'),
+            content: Text('¡Un Insanito se registro con éxito!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -59,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Error al registrar. Inténtalo de nuevo.'),
+            content: Text('Error al registrar. Inténtalo de nuevo o no quieres ser un Insanito'),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -112,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // TEXTOS DE ENCABEZADO
                 Center(
                   child: Text(
-                    'Crear una Cuenta',
+                    'Crear una Cuenta Insana',
                     style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
@@ -124,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 const Center(
                   child: Text(
-                    'Únete para participar activamente en tu comunidad',
+                    'Únete para ayudar a tu ciudad y ser un verdadero Insanito',
                     style: TextStyle(color: Colors.grey, fontSize: 15),
                     textAlign: TextAlign.center, // Soporta alineación opcional o estilo por defecto
                   ),

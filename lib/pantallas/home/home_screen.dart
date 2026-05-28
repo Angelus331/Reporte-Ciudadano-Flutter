@@ -45,7 +45,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             // ENCABEZADO DE BIENVENIDA MODERNO
             Text(
-              '¡Hola, Ciudadano Isnanito Listo para hacer tus Reportes!',
+              '¡Hola, Ciudadano Insanito Listo para hacer tus Reportes y ayudar a tu Comunidad!',
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,

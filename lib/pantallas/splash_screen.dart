@@ -85,7 +85,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 8),
             const Text(
-              'Tu voz importa en tu comunidad',
+              'Tu voz importa en tu comunidad, Se el q cambie al mundo',
               style: TextStyle(color: Colors.grey, fontSize: 16),
             ),
 
