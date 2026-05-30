@@ -32,15 +32,18 @@ class ReportDetailScreen extends StatelessWidget {
     bool success = await ReportService().deleteReport(report.id);
 
     if (success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Reporte eliminado')));
-
-      Navigator.pop(context);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Reporte eliminado con éxito')),
+        );
+        Navigator.pop(context);
+      }
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Error al eliminar')));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al eliminar el reporte')),
+        );
+      }
     }
   }
 
@@ -70,7 +73,7 @@ class ReportDetailScreen extends StatelessWidget {
           ),
           IconButton(
             onPressed: () async {
-              bool? confirm = await showDialog(
+              bool? confirm = await showDialog<bool>(
                 context: context,
                 builder: (_) {
                   return AlertDialog(
@@ -78,15 +81,11 @@ class ReportDetailScreen extends StatelessWidget {
                     content: const Text('¿Seguro que deseas eliminarlo?'),
                     actions: [
                       TextButton(
-                        onPressed: () {
-                          Navigator.pop(context, false);
-                        },
+                        onPressed: () => Navigator.pop(context, false),
                         child: const Text('Cancelar'),
                       ),
                       TextButton(
-                        onPressed: () {
-                          Navigator.pop(context, true);
-                        },
+                        onPressed: () => Navigator.pop(context, true),
                         child: const Text('Eliminar'),
                       ),
                     ],
@@ -94,7 +93,7 @@ class ReportDetailScreen extends StatelessWidget {
                 },
               );
 
-              if (confirm == true) {
+              if (confirm == true && context.mounted) {
                 deleteReport(context);
               }
             },
@@ -106,16 +105,15 @@ class ReportDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // SECCIÓN MEJORADA: Imagen con Shimmer Loading incorporado
-            if (report.imageUrl != null)
+            // SECCIÓN DE IMAGEN CON SHIMMER
+            if (report.imageUrl != null && report.imageUrl!.isNotEmpty)
               Image.network(
                 report.imageUrl!,
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
-                // Maneja el progreso de la descarga de la imagen mostrando un Shimmer premium ⚡
                 loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child; // Si ya descargó, muestra la imagen real
+                  if (loadingProgress == null) return child;
                   
                   return Shimmer.fromColors(
                     baseColor: isDarkMode ? const Color(0xFF1E293B) : Colors.grey[300]!,
@@ -137,6 +135,7 @@ class ReportDetailScreen extends StatelessWidget {
                 },
               ),
 
+            // DETALLES DEL REPORTE (¡CORREGIDO: Cierre de Padding y Column solucionados!)
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -154,36 +153,40 @@ class ReportDetailScreen extends StatelessWidget {
                     report.description,
                     style: const TextStyle(fontSize: 16, height: 1.4),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   
-                  ElevatedButton.icon(
-                    onPressed: () async {
-                      final Uri url = Uri.parse(
-                        'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
-                      );
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url, mode: LaunchMode.externalApplication);
-                      }
-                    },
-                    icon: const Icon(Icons.map_outlined),
-                    label: const Text('Abrir en Google Maps'),
-                  ),
+                  // Botón nativo para abrir la aplicación externa de Google Maps
+                  if (report.latitude != null && report.longitude != null)
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        // URL corregida y limpia bajo el esquema oficial universal de mapas
+                        final Uri url = Uri.parse(
+                          'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
+                        );
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(url, mode: LaunchMode.externalApplication);
+                        }
+                      },
+                      icon: const Icon(Icons.map_outlined),
+                      label: const Text('Abrir en Google Maps Externo'),
+                    ),
+                  
                   const SizedBox(height: 20),
 
-                  // GOOGLE MAP
+                  // VISTA INCRUSTADA DE GOOGLE MAPS (A prueba de nulos para evitar cierres fatales)
                   if (report.latitude != null && report.longitude != null)
                     SizedBox(
-                      height: 300,
+                      height: 250,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         child: GoogleMap(
                           initialCameraPosition: CameraPosition(
                             target: LatLng(report.latitude!, report.longitude!),
-                            zoom: 16,
+                            zoom: 15,
                           ),
                           markers: {
                             Marker(
-                              markerId: const MarkerId('report'),
+                              markerId: const MarkerId('report_marker'),
                               position: LatLng(report.latitude!, report.longitude!),
                             ),
                           },
@@ -191,18 +194,18 @@ class ReportDetailScreen extends StatelessWidget {
                       ),
                     ),
                   
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 80), // Margen inferior para que no tape el botón flotante
                 ],
               ),
-            ),
+            ), 
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _compartirReporte, // Apunta de forma segura a tu función de compartir
-        label: const Text('Compartir'),
-        icon: const Icon(Icons.phone_callback),
-        backgroundColor: const Color(0xFF25D366),
+        onPressed: _compartirReporte,
+        label: const Text('Compartir Reporte'),
+        icon: const Icon(Icons.share_rounded), // Ícono limpio y universal de compartir
+        backgroundColor: const Color(0xFF25D366), // Color temático de WhatsApp
         foregroundColor: Colors.white,
       ),
     );

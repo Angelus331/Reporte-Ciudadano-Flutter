@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../servicios/servicios_api.dart';
 import '../../servicios/notification_service.dart';
 import '../../servicios/category_services.dart';
-import '../../utils/constants.dart'; // 👈 Aseguramos el import de tus constantes
+import '../../utils/constants.dart';
 
 class CreateReportScreen extends StatefulWidget {
   const CreateReportScreen({super.key});
@@ -44,7 +44,11 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   // CÁMARA
   Future<void> pickImageCamera() async {
-    final picked = await picker.pickImage(source: ImageSource.camera);
+    final picked = await picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality:
+          50, // 👈 Reduce el peso drásticamente sin perder nitidez visual
+    );
     if (picked != null) {
       setState(() {
         image = File(picked.path);
@@ -54,7 +58,10 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
   // GALERÍA
   Future<void> pickImageGallery() async {
-    final picked = await picker.pickImage(source: ImageSource.gallery);
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 50, // 👈 Comprime la imagen antes de meterla al FormData
+    );
     if (picked != null) {
       setState(() {
         image = File(picked.path);
@@ -65,25 +72,93 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
   // GPS AUTOMÁTICO
   Future<void> getLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return;
+    if (!serviceEnabled) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Por favor, enciende el GPS de tu teléfono.'),
+            backgroundColor: Colors.orangeAccent,
+          ),
+        );
+      }
+      return;
+    }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Permiso de ubicación denegado.')),
+          );
+        }
+        return;
+      }
     }
 
-    Position position = await Geolocator.getCurrentPosition();
-    setState(() {
-      latitudeController.text = position.latitude.toString();
-      longitudeController.text = position.longitude.toString();
-    });
+    if (permission == LocationPermission.deniedForever) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Permisos denegados permanentemente. Actívalos en Ajustes.',
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+      return;
+    }
+
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Obteniendo coords'),
+            duration: Duration(seconds: 1),
+          ),
+        );
+      }
+
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10),
+      );
+
+      setState(() {
+        latitudeController.text = position.latitude.toString();
+        longitudeController.text = position.longitude.toString();
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Ubicación obtenida con éxito'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Tiempo de espera agotado o error: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
   }
 
   // CREAR REPORTE
   Future<void> createReport() async {
-    if (titleController.text.trim().isEmpty || descriptionController.text.trim().isEmpty) {
+    if (titleController.text.trim().isEmpty ||
+        descriptionController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor, completa el título y descripción')),
+        const SnackBar(
+          content: Text('Por favor, completa el título y descripción'),
+        ),
       );
       return;
     }
@@ -105,8 +180,8 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     FormData formData = FormData.fromMap({
       'title': titleController.text,
       'description': descriptionController.text,
-      'latitude': latitudeController.text,
-      'longitude': longitudeController.text,
+      'latitude': latitudeController.text.trim(),
+      'longitude': longitudeController.text.trim(),
       'category_id': selectedCategory,
       if (image != null) 'image': await MultipartFile.fromFile(image!.path),
     });
@@ -125,15 +200,17 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Reporte creado con éxito, Ayudaste a tu comunidad')),
+          const SnackBar(
+            content: Text('Reporte creado con éxito, Ayudaste a tu comunidad'),
+          ),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error al crear reporte')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Error al crear reporte')));
       }
     }
 
@@ -155,10 +232,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     final surfaceColor = Theme.of(context).colorScheme.surface;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crear Reporte'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Crear Reporte'), elevation: 0),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -167,13 +241,22 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             // SELECCIÓN DE CATEGORÍA MODERNA (Chips Horizontales con Iconos)
             const Text(
               'Categoría del incidente',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
             ),
             const SizedBox(height: 8),
             if (categories.isEmpty)
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: Center(child: Text('Cargando categorías...', style: TextStyle(color: Colors.grey))),
+                child: Center(
+                  child: Text(
+                    'Cargando categorías...',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ),
               )
             else
               SizedBox(
@@ -200,7 +283,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                         checkmarkColor: style['color'],
                         labelStyle: TextStyle(
                           color: isSelected ? style['color'] : null,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                         onSelected: (selected) {
                           setState(() {
@@ -274,7 +359,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     label: const Text('Tomar Foto'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
@@ -286,7 +373,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                     label: const Text('Galería'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                   ),
                 ),
@@ -302,10 +391,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: latitudeController,
-                    keyboardType: TextInputType.number,
+                    controller: latitudeController,                    
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Latitud',
+                      hintText: '-12.0463',
                       prefixIcon: const Icon(Icons.pin_drop_outlined),
                       filled: true,
                       fillColor: surfaceColor,
@@ -320,9 +413,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 Expanded(
                   child: TextField(
                     controller: longitudeController,
-                    keyboardType: TextInputType.number,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      decimal: true,
+                      signed: true,
+                    ),
                     decoration: InputDecoration(
                       labelText: 'Longitud',
+                      hintText: '-77.0427',
                       prefixIcon: const Icon(Icons.explore_outlined),
                       filled: true,
                       fillColor: surfaceColor,
@@ -344,11 +441,15 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               icon: const Icon(Icons.location_searching_rounded),
               label: const Text('Obtener Ubicación GPS'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                backgroundColor: Theme.of(
+                  context,
+                ).colorScheme.secondary.withOpacity(0.1),
                 foregroundColor: Theme.of(context).colorScheme.secondary,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
 
@@ -362,19 +463,29 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  disabledBackgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primary.withOpacity(0.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 0,
                 ),
                 child: loading
                     ? const SizedBox(
                         width: 24,
                         height: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2.5,
+                        ),
                       )
                     : const Text(
                         'Guardar Reporte',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ),
             ),

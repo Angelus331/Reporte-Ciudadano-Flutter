@@ -5,8 +5,16 @@ class Constants {
   //static const String baseUrl = "http://127.0.0.1:8000/api" para servidor propio
 
   // cambiar url por la de la pc
-  static Map<String, dynamic> getCategoryStyle(String categoryName) {
-    switch (categoryName.toLowerCase()) {
+  static Map<String, dynamic> getCategoryStyle(String? categoryName) {
+    // Si la categoría viene nula o vacía, devolvemos un estilo genérico de inmediato
+    if (categoryName == null || categoryName.trim().isEmpty) {
+      return {
+        'icon': Icons.label_outline_rounded, 
+        'color': Colors.blue
+      };
+    }
+    // Procesamos de forma segura en minúsculas limpiando espacios extras
+    switch (categoryName.trim().toLowerCase()) {
       case 'seguridad':
       case 'robo':
       case 'delincuencia':
@@ -22,6 +30,7 @@ class Constants {
       case 'luz':
         return {'icon': Icons.lightbulb_outline_rounded, 'color': Colors.orange};
       default:
+        // Estilo de respaldo si es una categoría nueva no registrada en el switch
         return {'icon': Icons.label_outline_rounded, 'color': Colors.blue};
     }
   }
