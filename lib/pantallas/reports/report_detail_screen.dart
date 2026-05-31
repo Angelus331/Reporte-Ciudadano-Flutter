@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shimmer/shimmer.dart'; // Importamos shimmer para el bloque fantasma de la imagen
+import 'package:shimmer/shimmer.dart'; 
 
 import '../../models/report_model.dart';
 import '../../servicios/report_servicio.dart';
@@ -50,6 +50,20 @@ class ReportDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    // 🟢 TRUCO MAESTRO DE COMPATIBILIDAD CON LARAVEL:
+    // Si tu modelo no mapeó bien 'image_url', intentamos extraer la ruta cruda del objeto de forma dinámica.
+    String? urlImagenValida;
+    try {
+      urlImagenValida = report.imageUrl;
+      if (urlImagenValida == null || urlImagenValida.isEmpty) {
+        // Intento fallback por si se quedó guardado como llave cruda json
+        final dynamic temporal = report;
+        urlImagenValida = temporal.imageUrl ?? temporal.image_url;
+      }
+    } catch (_) {
+      urlImagenValida = null;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -105,10 +119,10 @@ class ReportDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // SECCIÓN DE IMAGEN CON SHIMMER
-            if (report.imageUrl != null && report.imageUrl!.isNotEmpty)
+            // SECCIÓN DE IMAGEN CONTROLADA (Cero forzados fatales de tipo '!')
+            if (urlImagenValida != null && urlImagenValida.isNotEmpty)
               Image.network(
-                report.imageUrl!,
+                urlImagenValida,
                 width: double.infinity,
                 height: 250,
                 fit: BoxFit.cover,
@@ -126,16 +140,32 @@ class ReportDetailScreen extends StatelessWidget {
                   );
                 },
                 errorBuilder: (context, error, stackTrace) {
+                  // Si la IP de AWS cambia o el enlace se rompe, muestra esto en vez de cerrar la pantalla
                   return Container(
                     width: double.infinity,
-                    height: 200,
+                    height: 220,
                     color: Colors.grey.withOpacity(0.1),
-                    child: const Icon(Icons.broken_image_outlined, size: 50, color: Colors.grey),
+                    child: const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.broken_image_outlined, size: 50, color: Colors.grey),
+                        SizedBox(height: 8),
+                        Text('No se pudo cargar la imagen del servidor', style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
                   );
                 },
+              )
+            else
+              // Marcador de posición elegante si el reporte no contiene imagen
+              Container(
+                width: double.infinity,
+                height: 180,
+                color: Colors.grey.withOpacity(0.1),
+                child: const Icon(Icons.image_not_supported_outlined, size: 50, color: Colors.grey),
               ),
 
-            // DETALLES DEL REPORTE (¡CORREGIDO: Cierre de Padding y Column solucionados!)
+            // DETALLES DEL REPORTE 
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -155,25 +185,30 @@ class ReportDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   
-                  // Botón nativo para abrir la aplicación externa de Google Maps
+                  // 🟢 BOTÓN CORREGIDO CON EL SÍMBOLO '$' EN LA LATITUD
                   if (report.latitude != null && report.longitude != null)
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        // URL corregida y limpia bajo el esquema oficial universal de mapas
-                        final Uri url = Uri.parse(
-                          'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
-                        );
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(url, mode: LaunchMode.externalApplication);
-                        }
-                      },
-                      icon: const Icon(Icons.map_outlined),
-                      label: const Text('Abrir en Google Maps Externo'),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20),
+                      key: const ValueKey('btn_maps'),
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          final Uri url = Uri.parse(
+                            'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
+                          );
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                          }
+                        },
+                        icon: const Icon(Icons.map_outlined),
+                        label: const Text('Abrir en Google Maps Externo'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
                     ),
-                  
-                  const SizedBox(height: 20),
 
-                  // VISTA INCRUSTADA DE GOOGLE MAPS (A prueba de nulos para evitar cierres fatales)
+                  // VISTA INCRUSTADA DE GOOGLE MAPS
                   if (report.latitude != null && report.longitude != null)
                     SizedBox(
                       height: 250,
@@ -194,7 +229,7 @@ class ReportDetailScreen extends StatelessWidget {
                       ),
                     ),
                   
-                  const SizedBox(height: 80), // Margen inferior para que no tape el botón flotante
+                  const SizedBox(height: 80), // Margen inferior de seguridad
                 ],
               ),
             ), 
@@ -204,8 +239,8 @@ class ReportDetailScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _compartirReporte,
         label: const Text('Compartir Reporte'),
-        icon: const Icon(Icons.share_rounded), // Ícono limpio y universal de compartir
-        backgroundColor: const Color(0xFF25D366), // Color temático de WhatsApp
+        icon: const Icon(Icons.share_rounded), 
+        backgroundColor: const Color(0xFF25D366), 
         foregroundColor: Colors.white,
       ),
     );

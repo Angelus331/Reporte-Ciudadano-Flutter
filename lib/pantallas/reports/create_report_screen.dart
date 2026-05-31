@@ -177,20 +177,39 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
+    // 🟢 LIMPIEZA PREVENTIVA: Si los campos de texto del GPS están vacíos, 
+    // mandamos un valor nulo para que MySQL no salte con errores de casteo.
+    final String? latVal = latitudeController.text.trim().isEmpty ? null : latitudeController.text.trim();
+    final String? lngVal = longitudeController.text.trim().isEmpty ? null : longitudeController.text.trim();
+
     FormData formData = FormData.fromMap({
-      'title': titleController.text,
-      'description': descriptionController.text,
-      'latitude': latitudeController.text.trim(),
-      'longitude': longitudeController.text.trim(),
+      'title': titleController.text.trim(),
+      'description': descriptionController.text.trim(),
+      'latitude': latVal,
+      'longitude': lngVal,
       'category_id': selectedCategory,
-      if (image != null) 'image': await MultipartFile.fromFile(image!.path),
+      if (image != null) 
+        'image': await MultipartFile.fromFile(
+          image!.path,
+          // 🟢 Forzamos el nombre del archivo para que Laravel detecte correctamente la extensión
+          filename: image!.path.split('/').last, 
+        ),
     });
 
     try {
+      // 🟢 INYECCIÓN DE CABECERAS CRÍTICAS:
+      // Agregamos 'multipart/form-data' y 'Accept': 'application/json' 
+      // para asegurar que las fotos suban en HD y Laravel devuelva JSON siempre.
       await ApiService().dio.post(
         '/reports',
         data: formData,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Accept': 'application/json',
+            'Content-Type': 'multipart/form-data', // 👈 ¡Línea obligatoria para subir archivos!
+          },
+        ),
       );
 
       await NotificationService.showNotification(
@@ -202,15 +221,22 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Reporte creado con éxito, Ayudaste a tu comunidad'),
+            backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context); // Regresa a la pantalla anterior y refresca la lista
       }
     } catch (e) {
+      // Si ocurre un error en la red o en las llaves, lo imprimimos detallado en la consola de VS Code
+      debugPrint("Error fatal al subir el reporte a AWS: $e");
+      
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Error al crear reporte')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al crear reporte. Verifica tu conexión.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
       }
     }
 
