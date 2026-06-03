@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shimmer/shimmer.dart'; 
+import 'package:shimmer/shimmer.dart';
 
 import '../../models/report_model.dart';
 import '../../servicios/report_servicio.dart';
@@ -14,7 +14,8 @@ class ReportDetailScreen extends StatelessWidget {
   const ReportDetailScreen({super.key, required this.report});
 
   void _compartirReporte() async {
-    final String mensaje = '''
+    final String mensaje =
+        '''
     *Nuevo Reporte Ciudadano*
     *Título:* ${report.title}
     *Descripción:* ${report.description}
@@ -22,10 +23,7 @@ class ReportDetailScreen extends StatelessWidget {
     _Enviado desde la App de Reportes Ciudadanos_ 📱
     ''';
 
-    await Share.share(
-      mensaje,
-      subject: 'Reporte: ${report.title}',
-    );
+    await Share.share(mensaje, subject: 'Reporte: ${report.title}');
   }
 
   Future<void> deleteReport(BuildContext context) async {
@@ -128,10 +126,14 @@ class ReportDetailScreen extends StatelessWidget {
                 fit: BoxFit.cover,
                 loadingBuilder: (context, child, loadingProgress) {
                   if (loadingProgress == null) return child;
-                  
+
                   return Shimmer.fromColors(
-                    baseColor: isDarkMode ? const Color(0xFF1E293B) : Colors.grey[300]!,
-                    highlightColor: isDarkMode ? const Color(0xFF334155) : Colors.grey[100]!,
+                    baseColor: isDarkMode
+                        ? const Color(0xFF1E293B)
+                        : Colors.grey[300]!,
+                    highlightColor: isDarkMode
+                        ? const Color(0xFF334155)
+                        : Colors.grey[100]!,
                     child: Container(
                       width: double.infinity,
                       height: 250,
@@ -148,9 +150,16 @@ class ReportDetailScreen extends StatelessWidget {
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.broken_image_outlined, size: 50, color: Colors.grey),
+                        Icon(
+                          Icons.broken_image_outlined,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
                         SizedBox(height: 8),
-                        Text('No se pudo cargar la imagen del servidor', style: TextStyle(color: Colors.grey)),
+                        Text(
+                          'No se pudo cargar la imagen del servidor',
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       ],
                     ),
                   );
@@ -162,10 +171,14 @@ class ReportDetailScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 180,
                 color: Colors.grey.withValues(alpha: 0.1),
-                child: const Icon(Icons.image_not_supported_outlined, size: 50, color: Colors.grey),
+                child: const Icon(
+                  Icons.image_not_supported_outlined,
+                  size: 50,
+                  color: Colors.grey,
+                ),
               ),
 
-            // DETALLES DEL REPORTE 
+            // DETALLES DEL REPORTE
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
@@ -184,7 +197,7 @@ class ReportDetailScreen extends StatelessWidget {
                     style: const TextStyle(fontSize: 16, height: 1.4),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // 🟢 BOTÓN CORREGIDO CON EL SÍMBOLO '$' EN LA LATITUD
                   if (report.latitude != null && report.longitude != null)
                     Padding(
@@ -196,14 +209,22 @@ class ReportDetailScreen extends StatelessWidget {
                             'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
                           );
                           if (await canLaunchUrl(url)) {
-                            await launchUrl(url, mode: LaunchMode.externalApplication);
+                            await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
+                            );
                           }
                         },
                         icon: const Icon(Icons.map_outlined),
                         label: const Text('Abrir en Google Maps Externo'),
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -222,25 +243,28 @@ class ReportDetailScreen extends StatelessWidget {
                           markers: {
                             Marker(
                               markerId: const MarkerId('report_marker'),
-                              position: LatLng(report.latitude!, report.longitude!),
+                              position: LatLng(
+                                report.latitude!,
+                                report.longitude!,
+                              ),
                             ),
                           },
                         ),
                       ),
                     ),
-                  
+
                   const SizedBox(height: 80), // Margen inferior de seguridad
                 ],
               ),
-            ), 
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _compartirReporte,
         label: const Text('Compartir Reporte'),
-        icon: const Icon(Icons.share_rounded), 
-        backgroundColor: const Color(0xFF25D366), 
+        icon: const Icon(Icons.share_rounded),
+        backgroundColor: const Color(0xFF25D366),
         foregroundColor: Colors.white,
       ),
     );

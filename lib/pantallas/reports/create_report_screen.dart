@@ -47,7 +47,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     final picked = await picker.pickImage(
       source: ImageSource.camera,
       imageQuality:
-          50, // 👈 Reduce el peso drásticamente sin perder nitidez visual
+          50,
     );
     if (picked != null) {
       setState(() {
@@ -177,10 +177,13 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
 
-    // 🟢 LIMPIEZA PREVENTIVA: Si los campos de texto del GPS están vacíos, 
-    // mandamos un valor nulo para que MySQL no salte con errores de casteo.
-    final String? latVal = latitudeController.text.trim().isEmpty ? null : latitudeController.text.trim();
-    final String? lngVal = longitudeController.text.trim().isEmpty ? null : longitudeController.text.trim();
+    final double? latVal = latitudeController.text.trim().isEmpty
+        ? null
+        : double.tryParse(latitudeController.text.trim());
+
+    final double? lngVal = longitudeController.text.trim().isEmpty
+        ? null
+        : double.tryParse(longitudeController.text.trim());
 
     FormData formData = FormData.fromMap({
       'title': titleController.text.trim(),
@@ -188,17 +191,16 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       'latitude': latVal,
       'longitude': lngVal,
       'category_id': selectedCategory,
-      if (image != null) 
+      if (image != null)
         'image': await MultipartFile.fromFile(
           image!.path,
-          // 🟢 Forzamos el nombre del archivo para que Laravel detecte correctamente la extensión
-          filename: image!.path.split('/').last, 
+          filename: image!.path.split('/').last,
         ),
     });
 
     try {
       // 🟢 INYECCIÓN DE CABECERAS CRÍTICAS:
-      // Agregamos 'multipart/form-data' y 'Accept': 'application/json' 
+      // Agregamos 'multipart/form-data' y 'Accept': 'application/json'
       // para asegurar que las fotos suban en HD y Laravel devuelva JSON siempre.
       await ApiService().dio.post(
         '/reports',
@@ -225,12 +227,14 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context); // Regresa a la pantalla anterior y refresca la lista
+        Navigator.pop(
+          context,
+        ); // Regresa a la pantalla anterior y refresca la lista
       }
     } catch (e) {
       // Si ocurre un error en la red o en las llaves, lo imprimimos detallado en la consola de VS Code
       debugPrint("Error fatal al subir el reporte a AWS: $e");
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -418,7 +422,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: latitudeController,                    
+                    controller: latitudeController,
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
                       signed: true,
