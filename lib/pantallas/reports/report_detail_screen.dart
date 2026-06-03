@@ -11,14 +11,15 @@ class ReportDetailScreen extends StatelessWidget {
 
   const ReportDetailScreen({super.key, required this.report});
 
+  // LÓGICA DE COMPARTIR A WHATSAPP
   void _compartirReporte() async {
     final String mensaje = '''
-    *Nuevo Reporte Ciudadano*
-    *Título:* ${report.title}
-    *Descripción:* ${report.description}
+  *Nuevo Reporte Ciudadano* 
+*Título:* ${report.title}
+*Descripción:* ${report.description}
 
-    _Enviado desde la App de Reportes Ciudadanos_ 
-    ''';
+_Enviado desde la App de Reportes Ciudadanos_ 
+''';
 
     await Share.share(mensaje, subject: 'Reporte: ${report.title}');
   }
@@ -121,38 +122,56 @@ class ReportDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(report.description),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 30),
 
-                  // 🟢 EL BOTÓN ÚNICO Y SEGURO: Abre la ubicación en el mapa externo del celular
+                  // 🗺️ EL BOTÓN ÚNICO Y SEGURO: Abre la ubicación en el mapa externo del celular sin crasheos
                   if (report.latitude != null && report.longitude != null)
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.map_outlined),
-                      label: const Text('Abrir ubicación en Google Maps'),
-                      onPressed: () async {
-                        // Interpolación limpia de Dart con el símbolo '$' oficial
-                        final Uri url = Uri.parse(
-                          'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
-                        );
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(
-                            url,
-                            mode: LaunchMode.externalApplication,
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.map_outlined),
+                        label: const Text('Abrir ubicación en Google Maps'),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          // Interpolación limpia corregida usando comillas y variables unidas
+                          final Uri url = Uri.parse(
+                            'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
                           );
-                        } else {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('No se pudo abrir la app de mapas')),
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(
+                              url,
+                              mode: LaunchMode.externalApplication,
                             );
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('No se pudo abrir la app de mapas')),
+                              );
+                            }
                           }
-                        }
-                      },
+                        },
+                      ),
                     ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 80), // Espacio de seguridad abajo para que el FAB no tape el texto
                 ],
               ),
             ),
           ],
         ),
+      ),
+      
+      // TU BOTÓN FLOATING VERDE HERMOSO DE WHATSAPP MANTEINIDO AL 100%
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _compartirReporte,
+        label: const Text('Compartir Reporte'),
+        icon: const Icon(Icons.share_rounded),
+        backgroundColor: const Color(0xFF25D366), // Verde oficial de WhatsApp
+        foregroundColor: Colors.white,
       ),
     );
   }
