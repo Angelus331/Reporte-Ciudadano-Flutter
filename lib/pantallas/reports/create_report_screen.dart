@@ -207,8 +207,9 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
           headers: {
             'Authorization': 'Bearer $token',
             'Accept': 'application/json',
-            'Content-Type': 'multipart/form-data', // 👈 ¡Línea obligatoria para subir archivos!
+            'Content-Type': 'multipart/form-data',
           },
+          validateStatus: (status) => status == 200 || status == 201,
         ),
       );
 
@@ -469,7 +470,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(
                   context,
-                ).colorScheme.secondary.withOpacity(0.1),
+                ).colorScheme.secondary.withValues(alpha: 0.1),
                 foregroundColor: Theme.of(context).colorScheme.secondary,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -491,7 +492,7 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Theme.of(
                     context,
-                  ).colorScheme.primary.withOpacity(0.5),
+                  ).colorScheme.primary.withValues(alpha: 0.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

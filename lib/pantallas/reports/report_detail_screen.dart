@@ -144,7 +144,7 @@ class ReportDetailScreen extends StatelessWidget {
                   return Container(
                     width: double.infinity,
                     height: 220,
-                    color: Colors.grey.withOpacity(0.1),
+                    color: Colors.grey.withValues(alpha: 0.1),
                     child: const Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -161,7 +161,7 @@ class ReportDetailScreen extends StatelessWidget {
               Container(
                 width: double.infinity,
                 height: 180,
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 child: const Icon(Icons.image_not_supported_outlined, size: 50, color: Colors.grey),
               ),
 

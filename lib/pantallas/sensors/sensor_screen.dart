@@ -63,7 +63,7 @@ class _SensorScreenState extends State<SensorScreen> {
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: iconColor.withOpacity(0.1),
+                        color: iconColor.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -156,8 +156,8 @@ class _SensorScreenState extends State<SensorScreen> {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.grey.withOpacity(
-            Theme.of(context).brightness == Brightness.dark ? 0.05 : 0.15,
+          color: Colors.grey.withValues(
+            alpha: Theme.of(context).brightness == Brightness.dark ? 0.05 : 0.15,
           ),
         ),
       ),
@@ -200,7 +200,7 @@ class _SensorScreenState extends State<SensorScreen> {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: normalizedValue,
-              backgroundColor: color.withOpacity(0.1),
+              backgroundColor: color.withValues(alpha: 0.1),
               valueColor: AlwaysStoppedAnimation<Color>(color),
               minHeight: 8,
             ),

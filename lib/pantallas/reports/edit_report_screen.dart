@@ -233,7 +233,7 @@ class _EditReportScreenState extends State<EditReportScreen> {
                   foregroundColor: Colors.white,
                   disabledBackgroundColor: Theme.of(
                     context,
-                  ).colorScheme.primary.withOpacity(0.5),
+                  ).colorScheme.primary.withValues(alpha: 0.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),

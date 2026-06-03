@@ -96,7 +96,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -232,7 +232,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                      disabledBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
