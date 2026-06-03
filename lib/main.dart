@@ -3,8 +3,17 @@ import 'package:provider/provider.dart';
 
 import 'providers/report_provider.dart';
 import 'pantallas/splash_screen.dart';
+import 'servicios/notification_service.dart'; 
 
-void main() {
+void main() async {
+  // Asegura que los canales de comunicación nativos con Android/iOS estén listos
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await NotificationService.init();
+  } catch (e) {
+    debugPrint("No se pudieron inicializar las notificaciones locales: $e");
+  }
+
   runApp(
     MultiProvider(
       providers: [
