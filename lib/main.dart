@@ -75,29 +75,30 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0F172A),
+        // Fondo: Verde noche ultra oscuro y refinado
+        scaffoldBackgroundColor: const Color(0xFF0A0F0D), 
 
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF3B82F6),
-          secondary: Color(0xFF34D399),
-          surface: Color(0xFF1E293B),
-          error: Color(0xFFF87171),
+          primary: Color(0xFF2ECC71), 
+          secondary: Color(0xFF10B981),
+          surface: Color(0xFF141F1B),     
+          error: Color(0xFFF87171),        
         ),
 
         cardTheme: CardThemeData(
-          color: const Color(0xFF1E293B),
+          color: const Color(0xFF141F1B),
           elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(
-              color: Colors.white.withAlpha(13),
+            side: const BorderSide(
+              color: Color(0xFF1C2D27),
               width: 1,
             ),
           ),
         ),
 
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF0F172A),
+          backgroundColor: Color(0xFF0A0F0D), // Camuflado con el fondo general
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: false,
@@ -107,10 +108,11 @@ class MyApp extends StatelessWidget {
             color: Colors.white,
           ),
         ),
-
         inputDecorationTheme: InputDecorationTheme(
-          fillColor: const Color(0xFF1E293B),
+          fillColor: const Color(0xFF141F1B),
           filled: true,
+          labelStyle: const TextStyle(color: Colors.grey),
+          prefixIconColor: const Color(0xFF2ECC71), // Iconos internos en verde menta
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,

@@ -4,13 +4,16 @@ import '../auth/login_screen.dart';
 import '../reports/report_list_screen.dart';
 import '../reports/create_report_screen.dart';
 import '../sensors/sensor_screen.dart';
+import '../auth/change_pasword_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token'); //Borramos el token para limpiar la sesión en AWS
+    await prefs.remove(
+      'token',
+    ); //Borramos el token para limpiar la sesión en AWS
 
     if (context.mounted) {
       Navigator.pushReplacement(
@@ -47,7 +50,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             // ENCABEZADO DE BIENVENIDA MODERNO PRO [cite: 335]
             Text(
-              '¡Hola, Ciudadano!',
+              '¡Hola, Insanito de esta Linda Comunidad!',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -67,8 +70,9 @@ class HomeScreen extends StatelessWidget {
               crossAxisCount: 2, // 2 Columnas balanceadas [cite: 333]
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
-              shrinkWrap: true, //Evita desbordamientos de renderizado vertical 
-              physics: const NeverScrollableScrollPhysics(), // Scroll controlado por el body 
+              shrinkWrap: true, //Evita desbordamientos de renderizado vertical
+              physics:
+                  const NeverScrollableScrollPhysics(), // Scroll controlado por el body
               children: [
                 // TARJETA 1: VER REPORTES [cite: 333]
                 _buildMenuCard(
@@ -92,7 +96,9 @@ class HomeScreen extends StatelessWidget {
                   color: secondaryColor,
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const CreateReportScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const CreateReportScreen(),
+                    ),
                   ),
                 ),
 
@@ -106,6 +112,20 @@ class HomeScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const SensorScreen()),
+                  ),
+                ),
+
+                _buildMenuCard(
+                  context,
+                  title: 'Seguridad',
+                  subtitle: 'Cambiar contraseña',
+                  icon: Icons.shield_outlined,
+                  color: Colors.orange,
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ChangePasswordScreen(),
+                    ),
                   ),
                 ),
               ],
@@ -126,11 +146,15 @@ class HomeScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Card(
-      margin: EdgeInsets.zero, // Solucionado EdgeInsets.none a zero de forma 100% nativa [cite: 344, 346]
-      elevation: 0, // Material 3 hereda la elevación desde main.dart [cite: 338]
+      margin: EdgeInsets
+          .zero, // Solucionado EdgeInsets.none a zero de forma 100% nativa [cite: 344, 346]
+      elevation:
+          0, // Material 3 hereda la elevación desde main.dart [cite: 338]
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16), // Curva perfecta al hacer clic [cite: 338]
+        borderRadius: BorderRadius.circular(
+          16,
+        ), // Curva perfecta al hacer clic [cite: 338]
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(

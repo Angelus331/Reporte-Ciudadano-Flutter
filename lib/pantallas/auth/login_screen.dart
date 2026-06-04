@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../servicios/auth_services.dart';
 import '../home/home_screen.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -75,7 +76,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final surfaceColor = Theme.of(context).colorScheme.surface;
 
     return Scaffold(
-      // Mantenemos un AppBar invisible o muy limpio para mantener el estilo moderno
       appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -104,10 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
+                
                 const SizedBox(height: 24),
 
-                //TEXTO DE BIENVENIDA
                 Center(
                   child: Text(
                     '¡Ingresa a tu cuenta Insanito de la comunidad!',
@@ -160,7 +159,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                // INPUT: CONTRASEÑA (Con opción de ver/ocultar)
+                // INPUT: CONTRASEÑA
                 TextFormField(
                   controller: passwordController,
                   obscureText: _obscurePassword,
@@ -169,7 +168,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     filled: true,
                     fillColor: surfaceColor,
-                    // Botón para alternar el obscureText de forma nativa
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
@@ -196,9 +194,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ForgotPasswordScreen(),
+                        ),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
 
-                //  BOTÓN DE INICIO DE SESIÓN PREMIUM
+                const SizedBox(height: 24),
+
                 SizedBox(
                   height: 52,
                   child: ElevatedButton(
@@ -235,7 +259,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: 16),
 
-                // 📝 ENLACE A REGISTRO
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

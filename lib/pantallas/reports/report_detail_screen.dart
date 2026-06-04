@@ -165,7 +165,6 @@ _Enviado desde la App de Reportes Ciudadanos_
         ),
       ),
       
-      // TU BOTÓN FLOATING VERDE HERMOSO DE WHATSAPP MANTEINIDO AL 100%
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _compartirReporte,
         label: const Text('Compartir Reporte'),
