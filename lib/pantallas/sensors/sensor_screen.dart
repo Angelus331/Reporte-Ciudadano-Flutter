@@ -4,38 +4,6 @@ import 'package:sensors_plus/sensors_plus.dart';
 
 class SensorScreen extends StatefulWidget {
   const SensorScreen({super.key});
-
-  @override
-  State<SensorScreen> createState() => _SensorScreenState();
-}
-
-class _SensorScreenState extends State<SensorScreen> {
-  double x = 0;
-  double y = 0;
-  double z = 0;
-
-  StreamSubscription<AccelerometerEvent>? _accelerometerSubscription;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _accelerometerSubscription = accelerometerEvents.listen((event) {
-      if (!mounted) return;
-      setState(() {
-        x = event.x;
-        y = event.y;
-        z = event.z;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _accelerometerSubscription?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
