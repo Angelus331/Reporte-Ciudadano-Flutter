@@ -95,9 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
@@ -117,9 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       letterSpacing: -0.5,
-                      color: isDarkMode
-                          ? Colors.white
-                          : const Color(0xFF1E293B),
+                      color: isDarkMode ? Colors.white : const Color(0xFF1E293B),
                     ),
                   ),
                 ),
@@ -233,9 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.5),
+                      disabledBackgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
@@ -261,63 +255,71 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 const SizedBox(height: 24),
-                const Row(
-                  children: [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'O inicia sesión con',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
+                
+                // DIVISOR ESTILIZADO CONTÍNUO
                 Row(
                   children: [
-                    // Botón de Google
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: OutlinedButton.icon(
-                          icon: const Icon(
-                            Icons.g_mobiledata_rounded,
-                            color: Colors.red,
-                            size: 30,
-                          ),
-                          label: const Text(
-                            'Google',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () async {
-                            final datosSocial = await SocialAuthService()
-                                .loginConGoogle();
-                            if (datosSocial != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '¡Bienvenido vía Google: ${datosSocial['name']}!',
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        ),
+                    Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.3))),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'O continúa con',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
                       ),
                     ),
+                    Expanded(child: Divider(color: Colors.grey.withValues(alpha: 0.3))),
                   ],
                 ),
+                
+                const SizedBox(height: 20),
 
-                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(
+                      Icons.g_mobiledata_rounded,
+                      color: Colors.redAccent,
+                      size: 36,
+                    ),
+                    label: const Text(
+                      'Iniciar Sesión con Google',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.grey.withValues(alpha: 0.4)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: () async {
+                      // Invocamos el servicio v7 moderno enfocado en Google
+                      final datosSocial = await SocialAuthService().loginConGoogle();
+                      
+                      if (datosSocial != null && context.mounted) {
+                        // 🎯 Aquí usas tu cliente de DIO para mandarle el id_token a tu API de Laravel en AWS
+                        // Ejemplo: await ApiService().dio.post('/login-social', data: datosSocial);
+                        
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('¡Bienvenido vía Google: ${datosSocial['name']}!'),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        
+                        // Redirección limpia al HomeScreen Premium
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (_) => const HomeScreen()),
+                        );
+                      }
+                    },
+                  ),
+                ),
 
+                const SizedBox(height: 24),
+
+                // ENLACE A REGISTRO
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
