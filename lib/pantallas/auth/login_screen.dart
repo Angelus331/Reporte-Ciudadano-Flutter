@@ -313,50 +313,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 16),
-
-                    // Botón de Facebook
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: ElevatedButton.icon(
-                          icon: const Icon(
-                            Icons.facebook,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                          label: const Text(
-                            'Facebook',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(
-                              0xFF1877F2,
-                            ), // Azul oficial de Facebook
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          onPressed: () async {
-                            final datosSocial = await SocialAuthService()
-                                .loginConFacebook();
-                            if (datosSocial != null) {
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '¡Bienvenido vía Facebook: ${datosSocial['name']}!',
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      ),
-                    ),
                   ],
                 ),
 

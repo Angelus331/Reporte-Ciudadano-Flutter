@@ -1,66 +1,34 @@
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 class SocialAuthService {
-  // Instancia oficial de Google configurada de forma independiente
-  final GoogleSignIn _googleSignIn = GoogleSignIn(
-    scopes: [
-      'email',
-      'https://www.googleapis.com/auth/userinfo.profile',
-    ],
-  );
+  // 🟢 1. En la versión 7 ya no se usan paréntesis, se llama a la instancia global
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
-  // 🔥 1. LOGIN CON GOOGLE
   Future<Map<String, dynamic>?> loginConGoogle() async {
     try {
-      // Forzamos cerrar sesión previa para evitar bugs de cuentas congeladas
-      await _googleSignIn.signOut();
+      // 🟢 2. Novedad obligatoria de la v7: Se debe inicializar antes de usarse
+      await _googleSignIn.initialize();
 
-      // Desplegamos la ventanita nativa en el celular
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-      if (googleUser == null) return null; // El ciudadano canceló el proceso
+      // 🟢 3. El viejo signIn() fue reemplazado por authenticate()
+      // Nota: En la v7, si el usuario cancela la ventana emergente, cae directo al "catch"
+      final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
-      // Extraemos la autenticación segura de los servidores de Google
+      // Extraemos la autenticación de los servidores de Google
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
+      // 🎯 Retornamos los datos limpios para tu Dio y tu API en Laravel/AWS
       return {
         'provider': 'google',
         'email': googleUser.email,
         'name': googleUser.displayName,
-        'id_token': googleAuth.idToken,       // Token JWT para validar en tu backend
-        'access_token': googleAuth.accessToken, // Token de acceso secundario
+        
+        // 🟢 4. Ya solo enviamos el id_token (El accessToken fue removido por Google)
+        // Tu backend solo necesita este id_token para verificar la cuenta.
+        'id_token': googleAuth.idToken,       
       };
     } catch (e) {
-      print('Error crítico Google Sign-In: $e');
-      return null;
-    }
-  }
-
-  // 🔥 2. LOGIN CON FACEBOOK
-  Future<Map<String, dynamic>?> loginConFacebook() async {
-    try {
-      // Forzamos el cierre de sesión anterior
-      await FacebookAuth.instance.logOut();
-
-      // Solicitamos la interfaz nativa de la app de Facebook
-      final LoginResult result = await FacebookAuth.instance.login(
-        permissions: ['email', 'public_profile'],
-      );
-
-      if (result.status == LoginStatus.success) {
-        // Obtenemos los datos públicos del perfil del ciudadano
-        final userData = await FacebookAuth.instance.getUserData();
-
-        return {
-          'provider': 'facebook',
-          'email': userData['email'],
-          'name': userData['name'],
-          'token': result.accessToken?.token, // Token para pasar a Laravel
-        };
-      }
-      return null;
-    } catch (e) {
-      print('Error crítico Facebook Auth: $e');
+      // En la versión 7, cerrar o cancelar la ventanita se detecta aquí
+      print('🔥 Error o cancelación en Google Sign-In: $e');
       return null;
     }
   }
