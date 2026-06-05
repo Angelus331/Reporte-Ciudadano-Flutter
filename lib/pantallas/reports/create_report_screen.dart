@@ -199,9 +199,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
     });
 
     try {
-      // 🟢 INYECCIÓN DE CABECERAS CRÍTICAS:
-      // Agregamos 'multipart/form-data' y 'Accept': 'application/json'
-      // para asegurar que las fotos suban en HD y Laravel devuelva JSON siempre.
       await ApiService().dio.post(
         '/reports',
         data: formData,
@@ -221,20 +218,23 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
       );
 
       if (mounted) {
+        NotificationService.mostrarNotificacionInmediata(
+          id: 1,
+          titulo: '¡Reporte Creado con Éxito!',
+          cuerpo: 'Tu incidencia ha sido guardada en los servidores de AWS en tiempo real.',
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Reporte creado con éxito, Ayudaste a tu comunidad'),
             backgroundColor: Colors.green,
           ),
         );
+        
         Navigator.pop(
           context,
-        ); // Regresa a la pantalla anterior y refresca la lista
+        ); // Regresa a la pantalla anterior
       }
     } catch (e) {
-      // Si ocurre un error en la red o en las llaves, lo imprimimos detallado en la consola de VS Code
-      debugPrint("Error fatal al subir el reporte a AWS: $e");
-
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -269,7 +269,6 @@ class _CreateReportScreenState extends State<CreateReportScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // SELECCIÓN DE CATEGORÍA MODERNA (Chips Horizontales con Iconos)
             const Text(
               'Categoría del incidente',
               style: TextStyle(

@@ -3,6 +3,7 @@ import '../../servicios/auth_services.dart';
 import '../home/home_screen.dart';
 import 'register_screen.dart';
 import 'forgot_password_screen.dart';
+import '../../servicios/social_auth_servicio.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -62,7 +63,9 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Error de login. Verifica tus credenciales o eres kbro.'),
+            content: Text(
+              'Error de login. Verifica tus credenciales o eres kbro.',
+            ),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -104,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                
+
                 const SizedBox(height: 24),
 
                 Center(
@@ -255,6 +258,106 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                   ),
+                ),
+
+                const SizedBox(height: 24),
+                const Row(
+                  children: [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'O inicia sesión con',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                Row(
+                  children: [
+                    // Botón de Google
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: OutlinedButton.icon(
+                          icon: const Icon(
+                            Icons.g_mobiledata_rounded,
+                            color: Colors.red,
+                            size: 30,
+                          ),
+                          label: const Text(
+                            'Google',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () async {
+                            final datosSocial = await SocialAuthService()
+                                .loginConGoogle();
+                            if (datosSocial != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '¡Bienvenido vía Google: ${datosSocial['name']}!',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+
+                    // Botón de Facebook
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton.icon(
+                          icon: const Icon(
+                            Icons.facebook,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          label: const Text(
+                            'Facebook',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(
+                              0xFF1877F2,
+                            ), // Azul oficial de Facebook
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: () async {
+                            final datosSocial = await SocialAuthService()
+                                .loginConFacebook();
+                            if (datosSocial != null) {
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    '¡Bienvenido vía Facebook: ${datosSocial['name']}!',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 16),

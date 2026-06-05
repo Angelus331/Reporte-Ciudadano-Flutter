@@ -88,7 +88,7 @@ class _CalculadoraTabState extends State<CalculadoraTab> {
               padding: const EdgeInsets.all(4.0),
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  backgroundColor: isOperator ? Colors.blue.withOpacity(0.1) : null,
+                  backgroundColor: isOperator ? Colors.blue.withValues(alpha: 0.1) : null,
                   side: isOperator ? const BorderSide(color: Colors.blueAccent, width: 1) : null,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),

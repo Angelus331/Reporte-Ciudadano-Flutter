@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../models/report_model.dart';
 import '../../servicios/report_servicio.dart';
+import 'widgets/report_map_widget.dart'; // Importación nativa de tu OpenStreetMap
 import 'edit_report_screen.dart';
 
 class ReportDetailScreen extends StatelessWidget {
@@ -11,11 +12,10 @@ class ReportDetailScreen extends StatelessWidget {
 
   const ReportDetailScreen({super.key, required this.report});
 
-  // LÓGICA DE COMPARTIR A WHATSAPP
   void _compartirReporte() async {
-    final String mensaje = '''
-  *Nuevo Reporte Ciudadano* 
-*Título:* ${report.title}
+    final String mensaje =
+        '''
+*Nuevo Reporte Ciudadano* *Título:* ${report.title}
 *Descripción:* ${report.description}
 
 _Enviado desde la App de Reportes Ciudadanos_ 
@@ -122,23 +122,41 @@ _Enviado desde la App de Reportes Ciudadanos_
                   ),
                   const SizedBox(height: 10),
                   Text(report.description),
-                  const SizedBox(height: 30),
 
-                  // 🗺️ EL BOTÓN ÚNICO Y SEGURO: Abre la ubicación en el mapa externo del celular sin crasheos
+                  if (report.latitude != null && report.longitude != null) ...[
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Ubicación en el Mapa',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ReportMapWidget(
+                      latitud:
+                          double.tryParse(report.latitude.toString()) ?? 0.0,
+                      longitud:
+                          double.tryParse(report.longitude.toString()) ?? 0.0,
+                    ),
+                  ],
+
+                  const SizedBox(height: 24),
+
                   if (report.latitude != null && report.longitude != null)
                     SizedBox(
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton.icon(
                         icon: const Icon(Icons.map_outlined),
-                        label: const Text('Abrir ubicación en Google Maps'),
+                        label: const Text('Abrir ruteo en Google Maps Externo'),
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         onPressed: () async {
-                          // Interpolación limpia corregida usando comillas y variables unidas
+                          // Estructura oficial de lanzamiento de mapas limpia
                           final Uri url = Uri.parse(
                             'https://www.google.com/maps/search/?api=1&query=${report.latitude},${report.longitude}',
                           );
@@ -150,21 +168,26 @@ _Enviado desde la App de Reportes Ciudadanos_
                           } else {
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('No se pudo abrir la app de mapas')),
+                                const SnackBar(
+                                  content: Text(
+                                    'No se pudo abrir la app de mapas',
+                                  ),
+                                ),
                               );
                             }
                           }
                         },
                       ),
                     ),
-                  const SizedBox(height: 80), // Espacio de seguridad abajo para que el FAB no tape el texto
+                  const SizedBox(
+                    height: 80,
+                  ), // Espacio inferior anti-tap del FAB
                 ],
               ),
             ),
           ],
         ),
       ),
-      
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _compartirReporte,
         label: const Text('Compartir Reporte'),

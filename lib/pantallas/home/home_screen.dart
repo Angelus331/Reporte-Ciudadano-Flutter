@@ -5,6 +5,9 @@ import '../reports/report_list_screen.dart';
 import '../reports/create_report_screen.dart';
 import '../sensors/sensor_screen.dart';
 import '../auth/change_pasword_screen.dart';
+import '../reports/widgets/all_reports_map_widget.dart';
+import '../../models/report_model.dart';
+import '../../servicios/report_servicio.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -63,11 +66,37 @@ class HomeScreen extends StatelessWidget {
               'Selecciona una opción para interactuar con tu comunidad de forma insanita.',
               style: TextStyle(color: Colors.grey, fontSize: 15),
             ),
+            const SizedBox(height: 24),
+
+            const Text(
+              'Mapa General de Incidencias (Puno)',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            FutureBuilder<List<ReportModel>>(
+              future: ReportService().getReports(), // Trae los reportes reales de AWS
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Container(
+                    height: 220,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withAlpha(20),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                } else if (snapshot.hasError || !snapshot.hasData) {
+                  return const AllReportsMapWidget(reports: []);
+                }
+                return AllReportsMapWidget(reports: snapshot.data!);
+              },
+            ),
+
             const SizedBox(height: 32),
 
-            // CUADRÍCULA PREMIUM DE SECCIONES (Grid View Balanceado) [cite: 331, 333]
             GridView.count(
-              crossAxisCount: 2, // 2 Columnas balanceadas [cite: 333]
+              crossAxisCount: 2,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16,
               shrinkWrap: true, //Evita desbordamientos de renderizado vertical
@@ -136,7 +165,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  //CONSTRUCTOR MODULAR CORREGIDO (¡EdgeInsets.zero aplicado perfectamente sin errores!) [cite: 338, 344, 346]
   Widget _buildMenuCard(
     BuildContext context, {
     required String title,
@@ -147,21 +175,20 @@ class HomeScreen extends StatelessWidget {
   }) {
     return Card(
       margin: EdgeInsets
-          .zero, // Solucionado EdgeInsets.none a zero de forma 100% nativa [cite: 344, 346]
+          .zero,
       elevation:
-          0, // Material 3 hereda la elevación desde main.dart [cite: 338]
+          0,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(
           16,
-        ), // Curva perfecta al hacer clic [cite: 338]
+        ), 
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Contenedor circular elegante con opacidad translúcida para el Icono [cite: 334]
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -171,7 +198,6 @@ class HomeScreen extends StatelessWidget {
                 child: Icon(icon, color: color, size: 28),
               ),
 
-              // Textos informativos inferiores adaptativos
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

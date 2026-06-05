@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../servicios/notification_service.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -56,22 +57,39 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       if (response.statusCode == 200) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseData['message']), backgroundColor: Colors.green),
+            SnackBar(
+              content: Text(responseData['message']),
+              backgroundColor: Colors.green,
+            ),
+          );
+          NotificationService.mostrarNotificacionInmediata(
+            id: 2,
+            titulo: 'Seguridad Actualizada',
+            cuerpo:
+                'Tu contraseña de Reporte Ciudadano ha sido cambiada con éxito.',
           );
           Navigator.pop(context); // Cierra la pantalla y regresa al Home
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseData['message'] ?? 'Error de validación'), backgroundColor: Colors.redAccent),
+            SnackBar(
+              content: Text(responseData['message'] ?? 'Error de validación'),
+              backgroundColor: Colors.redAccent,
+            ),
           );
         }
       }
     } catch (e) {
-      setState(() { loading = false; });
+      setState(() {
+        loading = false;
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error de conexión con AWS: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text('Error de conexión con AWS: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     }
@@ -108,7 +126,9 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   labelText: 'Contraseña Actual',
                   prefixIcon: Icon(Icons.lock_outline),
                 ),
-                validator: (value) => value == null || value.isEmpty ? 'Ingresa tu clave actual' : null,
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Ingresa tu clave actual'
+                    : null,
               ),
               const SizedBox(height: 16),
 
@@ -121,8 +141,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   prefixIcon: Icon(Icons.lock_reset_rounded),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Ingresa tu nueva clave';
-                  if (value.length < 8) return 'Debe tener al menos 8 caracteres';
+                  if (value == null || value.isEmpty) {
+                    return 'Ingresa tu nueva clave';
+                  }
+                  if (value.length < 8) {
+                    return 'Debe tener al menos 8 caracteres';
+                  }
                   return null;
                 },
               ),
@@ -136,11 +160,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                   child: loading
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5))
-                      : const Text('Actualizar Contraseña', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.5,
+                          ),
+                        )
+                      : const Text(
+                          'Actualizar Contraseña',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                 ),
               ),
             ],
